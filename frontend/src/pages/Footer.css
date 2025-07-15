@@ -1,0 +1,100 @@
+.footer {
+  background-color: #000;
+  color: #fff;
+  padding: 40px 20px 20px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-column h5 {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column li {
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.footer-column li:hover {
+  text-decoration: underline;
+}
+
+.newsletter-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.email-input {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+}
+
+.subscribe-btn {
+  padding: 8px 16px;
+  background-color: #888;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.subscribe-btn:hover {
+  background-color: #000;
+  color: #fff;
+  border: 0.1px solid #fff;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.social-icons {
+  margin-bottom: 15px;
+}
+
+.icon {
+  font-size: 25px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+.facebook { color: #1c4bb1; }
+.instagram { color: #fd2d53; }
+.twitter { color: #1da1f2; }
+.youtube { color: #ff0000; }
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+}

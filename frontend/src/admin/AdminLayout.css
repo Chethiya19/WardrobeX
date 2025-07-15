@@ -1,0 +1,89 @@
+.admin-dashboard {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background-color: #222;
+  color: white;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  justify-content: center;
+  /* Center items vertically */
+  text-align: center;
+}
+
+.admin-sidebar h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #00bcd4;
+}
+
+.admin-sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar nav ul li {
+  margin: 0;
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+  transition: background 0.3s ease;
+  border-bottom: 2px solid #555;
+}
+
+.admin-sidebar nav ul li:last-child {
+  border-bottom: none;
+}
+
+.admin-sidebar nav ul li.selected {
+  /* background-color: #444; */
+  color: #00bcd4;
+  /* Optional highlight text color */
+}
+
+.admin-sidebar nav ul li:hover {
+  background-color: #444;
+}
+
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 1px 10px;
+  width: 60%;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-top: 300px;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #f4f6f9;
+  overflow-y: auto;
+}
+
+.top-bar {
+  background-color: white;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content-area {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
