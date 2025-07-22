@@ -2,27 +2,52 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 export default function ManageUsers() {
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // array of combined user + account detail
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:5000/api/admin/customers', { withCredentials: true })
-      .then((res) => {
-        setUsers(res.data);
+    const fetchData = async () => {
+      try {
+        const [customersRes, accountDetailsRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/admin/customers', { withCredentials: true }),
+          axios.get('http://localhost:5000/api/admin/accountdetails', { withCredentials: true }),
+        ]);
+
+        const customers = customersRes.data;
+        const accountDetails = accountDetailsRes.data;
+
+        // Combine by matching customerId (_id in Customer === customerId in AccountDetail)
+        const combinedUsers = customers.map((customer) => {
+          const account = accountDetails.find(
+            (acc) => acc.customerId === customer._id || (acc.customerId && acc.customerId._id === customer._id)
+          );
+          return {
+            _id: customer._id,
+            username: customer.username || '', 
+            email: customer.email || '',
+            firstName: account?.firstName || '',
+            lastName: account?.lastName || '',
+            phone: account?.phone || '',
+          };
+        });
+
+        setUsers(combinedUsers);
         setLoading(false);
-      })
-      .catch(() => {
+      } catch (err) {
+        console.error(err);
         setError('Unauthorized or failed to load users');
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
     <>
       <header className="top-bar">
-        <h2>Manage Users</h2>
+        <h2>Customers</h2>
       </header>
       <section className="content-area">
         {loading ? (
@@ -36,15 +61,23 @@ export default function ManageUsers() {
             <table style={tableStyle}>
               <thead>
                 <tr>
+                  <th style={thStyle}>#</th>
+                  <th style={thStyle}>Name</th>
                   <th style={thStyle}>Username</th>
                   <th style={thStyle}>Email</th>
+                  <th style={thStyle}>Contact</th>
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {users.map((user, index) => (
                   <tr key={user._id} style={trStyle}>
+                    <td style={tdStyle}>{index + 1}</td>
+                    <td style={tdStyle}>
+                      {user.firstName} {user.lastName}
+                    </td>
                     <td style={tdStyle}>{user.username}</td>
                     <td style={tdStyle}>{user.email}</td>
+                    <td style={tdStyle}>{user.phone}</td>
                   </tr>
                 ))}
               </tbody>
@@ -68,19 +101,19 @@ const tableStyle = {
   borderCollapse: 'separate',
   borderSpacing: 0,
   minWidth: '400px',
+  textAlign: 'center',
 };
 
 const thStyle = {
   position: 'sticky',
   top: 0,
-  backgroundColor: '#d2d2d2', 
+  backgroundColor: '#d2d2d2',
   color: '#111',
   padding: '12px 20px',
-  textAlign: 'left',
   fontWeight: '600',
   fontSize: '1rem',
   userSelect: 'none',
-  borderBottom: '3px solidrgb(190, 230, 224)',
+  borderBottom: '3px solid #ccc',
 };
 
 const trStyle = {
@@ -92,6 +125,5 @@ const tdStyle = {
   padding: '14px 20px',
   borderBottom: '1px solid #e5e7eb', // Tailwind gray-200
   fontSize: '0.95rem',
-  color: '#374151', // gray-700
+  color: '#20252eff',
 };
-

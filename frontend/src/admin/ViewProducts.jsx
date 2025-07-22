@@ -240,7 +240,7 @@ const tdStyle = {
   padding: '14px 20px',
   borderBottom: '1px solid #e5e7eb',
   fontSize: '0.95rem',
-  color: '#374151',
+  color: '#20252eff',
   verticalAlign: 'middle',
   textAlign: 'center',
 };

@@ -23,11 +23,17 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Import routes
 const adminAuthRoutes = require('./routes/adminAuth');
 const adminRoutes = require('./routes/admin');
+const adminOrderRoutes = require('./routes/adminOrder');
 const adminProductRoutes = require('./routes/adminProducts');
 const customerAuthRoutes = require('./routes/customerAuth');
-const productRoutes = require('./routes/productRoutes'); // ✅ for frontend view
+const productRoutes = require('./routes/productRoutes');
 const accountDetailsRoute = require('./routes/accountDetails');
 const addressRoute = require('./routes/address');
+const wishlistRoutes = require('./routes/wishlist');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const cardRoutes = require('./routes/cardRoutes');
+
 
 // Use routes
 app.use('/api/admin', adminAuthRoutes);
@@ -37,6 +43,11 @@ app.use('/api/customer', customerAuthRoutes);
 app.use('/api/products', productRoutes); // ✅ for frontend product grid
 app.use('/api/account-details', accountDetailsRoute);
 app.use('/api/address', addressRoute);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/admin', adminOrderRoutes);
+app.use('/api/cards', cardRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)

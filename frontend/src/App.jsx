@@ -7,6 +7,8 @@ import MainLayout from './pages/MainLayout';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import FilterProducts from './pages/FilterProducts';
+import Checkout from './pages/Checkout';
+import Payment from './pages/Payment';
 
 import CustomerLayout from './customer/CustomerLayout';
 import CustomerDashboard from './customer/CustomerDashboard';
@@ -15,6 +17,7 @@ import AddAddress from './customer/AddAddress';
 import EditAddress from './customer/EditAddress';
 import Orders from './customer/Orders';
 import AccountSecurity from './customer/AccountSecurity';
+import Wishlist from './customer/Wishlist';
 
 import AdminLayout from './admin/AdminLayout';
 import AdminLogin from './admin/AdminLogin';
@@ -24,6 +27,7 @@ import ManageUsers from './admin/ManageUsers';
 import ViewProducts from './admin/ViewProducts';
 import AddProduct from './admin/AddProduct';
 import EditProduct from './admin/EditProduct';
+import ManageOrders from './admin/ManageOrders';
 
 
 function App() {
@@ -40,6 +44,8 @@ function App() {
         <Route path="/:gender" element={<FilterProducts />} />
         <Route path="/category/:category" element={<FilterProducts />} />
         <Route path="/shop" element={<FilterProducts />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout/payment" element={<Payment />} />
 
         <Route element={<CustomerLayout />}>
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
@@ -48,6 +54,7 @@ function App() {
           <Route path="/customer/address/edit" element={<EditAddress />} />
           <Route path="/customer/orders" element={<Orders />} />
           <Route path="/customer/security" element={<AccountSecurity />} />
+          <Route path="/customer/wishlist" element={<Wishlist />} />
         </Route>
       </Route>
 
@@ -58,6 +65,7 @@ function App() {
         <Route path="/admin/products" element={<ViewProducts />} />
         <Route path="/admin/product/add" element={<AddProduct />} />
         <Route path="/admin/product/edit/:id" element={<EditProduct />} />
+        <Route path="/admin/orders" element={<ManageOrders />} />
       </Route>
 
       {/* Admin Auth Pages (standalone) */}

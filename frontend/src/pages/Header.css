@@ -145,7 +145,7 @@
   }
 }
 
-/* Sidebar styles */
+/* Sidebar Navigation */
 .sidebar {
   position: fixed;
   top: 0;
@@ -229,7 +229,6 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Show dropdown on hover */
 .sidebar-dropdown-group:hover .sidebar-dropdown-content {
   display: flex;
 }
@@ -248,7 +247,6 @@
   color: #f9a826;
 }
 
-/* Sidebar Regular Links */
 .sidebar-links > span {
   cursor: pointer;
   padding: 8px 12px;
@@ -263,7 +261,7 @@
   color: #f9a826;
 }
 
-/* Dark Overlay */
+/* Overlay (if used with sidebar) */
 .overlay {
   position: fixed;
   top: 0;
@@ -275,106 +273,22 @@
   transition: opacity 0.3s ease;
 }
 
-/* Cart Sidebar */
-.cart-sidebar {
-  position: fixed;
-  top: 0;
-  right: -350px;
-  width: 350px;
-  height: 100vh;
-  background: white;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
-  z-index: 1500;
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.cart-sidebar.open {
-  right: 0;
-}
-
-.cart-sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #ddd;
-}
-
-.cart-sidebar-header h3 {
-  margin: 0;
-  font-weight: 600;
-  font-size: 1.2rem;
-}
-
-.cart-sidebar-header .close-btn {
+.cart-icon-wrapper {
+  position: relative;
   cursor: pointer;
-  font-size: 24px;
-  line-height: 1;
-  user-select: none;
-  color: #111;
 }
 
-.cart-sidebar-content {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.cart-sidebar-footer {
-  padding: 15px 20px;
-  border-top: 1px solid #ddd;
-  background-color: #f9f9f9;
-}
-
-.cart-sidebar-footer .total {
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-.total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
-
-.cart-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-primary {
-  flex: 1;
-  padding: 10px 0;
-  background-color: #007bff;
-  border: none;
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background-color: red;
   color: white;
-  cursor: pointer;
-  font-weight: 600;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.btn-secondary {
-  flex: 1;
-  padding: 10px 0;
-  background-color: #e0e0e0;
-  border: none;
-  color: #333;
-  cursor: pointer;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background-color: #c6c6c6;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  line-height: 1;
+  min-width: 18px;
+  text-align: center;
 }

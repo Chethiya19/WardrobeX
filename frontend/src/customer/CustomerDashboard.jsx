@@ -45,7 +45,7 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <div className="card border-0 shadow rounded-4">
+    <div className="card border-0 shadow rounded-4" style={{ marginTop: '24px' }}>
       <div className="card-header bg-white border-bottom">
         <h3 className="mb-0 fw-semibold">Account Details</h3>
       </div>

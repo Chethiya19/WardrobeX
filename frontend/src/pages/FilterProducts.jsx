@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const styles = {
     container: {
@@ -91,46 +92,85 @@ function slugify(text) {
 export default function FilterProducts() {
     const { gender, category } = useParams();
     const [products, setProducts] = useState([]);
+    const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [loggedIn, setLoggedIn] = useState(false);
     const navigate = useNavigate();
 
     const capitalize = (str) => str?.charAt(0).toUpperCase() + str?.slice(1);
-
-    useEffect(() => {
-        setLoading(true);
-
-        let url = '';
-
-        if (gender && category) {
-            url = `http://localhost:5000/api/products/category/${category}/gender/${gender}`;
-        } else if (category) {
-            url = `http://localhost:5000/api/products/category/${category}`;
-        } else if (gender) {
-            url = `http://localhost:5000/api/products/gender/${gender}`;
-        } else {
-            url = `http://localhost:5000/api/products`;
-        }
-
-        console.log('➡️ Fetching from:', url); // DEBUG
-        axios
-            .get(url)
-            .then((res) => {
-                console.log('✅ Products received:', res.data); // DEBUG
-                setProducts(res.data);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error('❌ Error:', err);
-                setProducts([]);
-                setLoading(false);
-            });
-    }, [gender, category]);
 
     const heading = gender
         ? capitalize(gender) + (category ? ` / ${capitalize(category)}` : '')
         : category
             ? capitalize(category)
             : 'All Products';
+
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            try {
+                let url = '';
+                if (gender && category) {
+                    url = `http://localhost:5000/api/products/category/${category}/gender/${gender}`;
+                } else if (category) {
+                    url = `http://localhost:5000/api/products/category/${category}`;
+                } else if (gender) {
+                    url = `http://localhost:5000/api/products/gender/${gender}`;
+                } else {
+                    url = `http://localhost:5000/api/products`;
+                }
+
+                const productRes = await axios.get(url);
+                setProducts(productRes.data);
+
+                try {
+                    const wishlistRes = await axios.get('http://localhost:5000/api/wishlist', { withCredentials: true });
+                    setWishlist(wishlistRes.data.map(item => item.productId._id));
+                    setLoggedIn(true);
+                } catch {
+                    setLoggedIn(false);
+                }
+
+            } catch (err) {
+                setProducts([]);
+                setWishlist([]);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchData();
+    }, [gender, category]);
+
+    const toggleWishlist = async (productId, liked) => {
+        if (!loggedIn) {
+            Swal.fire({
+                title: 'Login Required',
+                text: 'You must be logged in to add to your wishlist.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate('/customer-login');
+                }
+            });
+            return;
+        }
+
+        try {
+            if (liked) {
+                await axios.delete(`http://localhost:5000/api/wishlist/remove/${productId}`, { withCredentials: true });
+                setWishlist(prev => prev.filter(id => id !== productId));
+            } else {
+                await axios.post(`http://localhost:5000/api/wishlist/add/${productId}`, {}, { withCredentials: true });
+                setWishlist(prev => [...prev, productId]);
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Error updating wishlist. Please try again.', 'error');
+        }
+    };
 
     return (
         <div style={styles.container}>
@@ -142,7 +182,13 @@ export default function FilterProducts() {
             ) : (
                 <div style={styles.grid}>
                     {products.map((product) => (
-                        <ProductCard key={product._id} product={product} />
+                        <ProductCard
+                            key={product._id}
+                            product={product}
+                            liked={wishlist.includes(product._id)}
+                            toggleWishlist={toggleWishlist}
+                            navigate={navigate}
+                        />
                     ))}
                 </div>
             )}
@@ -150,10 +196,8 @@ export default function FilterProducts() {
     );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, liked, toggleWishlist, navigate }) {
     const [hover, setHover] = useState(false);
-    const [liked, setLiked] = useState(false);
-    const navigate = useNavigate();
 
     const handleCardClick = () => {
         const slug = slugify(product.name);
@@ -197,7 +241,7 @@ function ProductCard({ product }) {
                             style={heartStyle}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setLiked(!liked);
+                                toggleWishlist(product._id, liked);
                             }}
                             title={liked ? 'Remove from wishlist' : 'Add to wishlist'}
                         >
@@ -207,7 +251,10 @@ function ProductCard({ product }) {
                     <div style={styles.description}>{product.description}</div>
                 </div>
                 <div style={styles.price}>
-                    LKR {Number(Number(product.price).toFixed(2)).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    LKR {Number(Number(product.price).toFixed(2)).toLocaleString('en-LK', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    })}
                 </div>
             </div>
         </div>

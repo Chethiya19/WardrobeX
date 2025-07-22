@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default function ProductDetail() {
     const { slug } = useParams();
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState('');
+    const navigate = useNavigate();
 
     const sizeOptions = {
         Shirts: ['S', 'M', 'L', 'XL'],
@@ -27,12 +29,38 @@ export default function ProductDetail() {
 
     if (!product) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading or Product Not Found</div>;
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (sizeOptions[product.category]?.length > 0 && !selectedSize) {
-            alert("Please select a size before adding to cart.");
+            Swal.fire('Select Size', 'Please select a size before adding to cart.', 'warning');
             return;
         }
-        alert(`Added ${quantity} x ${product.name}${selectedSize ? ` (Size: ${selectedSize})` : ''} to cart`);
+
+        try {
+            const res = await axios.post('http://localhost:5000/api/cart/add', {
+                productId: product._id,
+                size: selectedSize,
+                quantity,
+            }, { withCredentials: true });
+
+            Swal.fire('Success', res.data.message || 'Product added to cart!', 'success');
+        } catch (err) {
+            if (err.response?.status === 401) {
+                Swal.fire({
+                    title: 'Login Required',
+                    text: 'Please login to add to cart.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Login',
+                    cancelButtonText: 'Cancel',
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        navigate('/customer-login');
+                    }
+                });
+            } else {
+                Swal.fire('Error', 'Failed to add to cart', 'error');
+            }
+        }
     };
 
     const renderSizeButtons = () => {

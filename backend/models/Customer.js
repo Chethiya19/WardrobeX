@@ -22,4 +22,15 @@ customerSchema.methods.matchPassword = function(password) {
   return bcrypt.compare(password, this.password);
 };
 
+// Virtual populate for AccountDetail (one-to-one)
+customerSchema.virtual('accountDetail', {
+  ref: 'AccountDetail',
+  localField: '_id',
+  foreignField: 'customerId',
+  justOne: true,
+});
+
+customerSchema.set('toObject', { virtuals: true });
+customerSchema.set('toJSON', { virtuals: true });
+
 module.exports = mongoose.model('Customer', customerSchema);

@@ -40,13 +40,19 @@ export default function AdminLayout() {
                 className={isActive('/admin/users') ? 'selected' : ''}
                 onClick={() => navigate('/admin/users')}
               >
-                Users
+                Customers
               </li>
               <li
                 className={isActive('/admin/products') ? 'selected' : ''}
                 onClick={() => navigate('/admin/products')}
               >
                 Products
+              </li>
+              <li
+                className={isActive('/admin/orders') ? 'selected' : ''}
+                onClick={() => navigate('/admin/orders')}
+              >
+                Orders
               </li>
             </ul>
           </nav>

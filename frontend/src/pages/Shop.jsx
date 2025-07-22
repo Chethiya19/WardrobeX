@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const styles = {
   container: {
@@ -53,16 +54,6 @@ const styles = {
     color: '#222',
     marginBottom: '6px',
   },
-  brand: {
-    fontSize: '0.9rem',
-    color: '#555',
-    marginBottom: '4px',
-  },
-  category: {
-    fontSize: '0.85rem',
-    color: '#888',
-    marginBottom: '8px',
-  },
   description: {
     fontSize: '0.9rem',
     color: '#555',
@@ -98,41 +89,96 @@ function slugify(text) {
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/products')
-      .then(res => {
-        setProducts(res.data);
-        setLoading(false);
-      })
-      .catch(() => {
+    async function fetchData() {
+      try {
+        // Fetch all products (no auth required)
+        const productRes = await axios.get('http://localhost:5000/api/products');
+        setProducts(productRes.data);
+
+        // Try fetching wishlist (auth required)
+        try {
+          const wishlistRes = await axios.get('http://localhost:5000/api/wishlist', { withCredentials: true });
+          setWishlist(wishlistRes.data.map(item => item.productId._id));
+          setLoggedIn(true);
+        } catch {
+          setLoggedIn(false);
+        }
+
+      } catch (err) {
+        console.error(err);
         setProducts([]);
+        setWishlist([]);
+      } finally {
         setLoading(false);
-      });
+      }
+    }
+
+    fetchData();
   }, []);
+
+  const toggleWishlist = async (productId, liked) => {
+  if (!loggedIn) {
+    Swal.fire({
+      title: 'Login Required',
+      text: 'You must be logged in to add to your wishlist.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Login',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/customer-login');
+      }
+    });
+    return;
+  }
+
+  try {
+    if (liked) {
+      await axios.delete(`http://localhost:5000/api/wishlist/remove/${productId}`, { withCredentials: true });
+      setWishlist(prev => prev.filter(id => id !== productId));
+    } else {
+      await axios.post(`http://localhost:5000/api/wishlist/add/${productId}`, {}, { withCredentials: true });
+      setWishlist(prev => [...prev, productId]);
+    }
+  } catch (err) {
+    Swal.fire('Error', 'Error updating wishlist. Please try again.', 'error');
+  }
+};
+
+  if (loading) {
+    return <p style={styles.loading}>Loading products...</p>;
+  }
+
+  if (products.length === 0) {
+    return <p style={styles.noProducts}>No products available.</p>;
+  }
 
   return (
     <div style={styles.container}>
-      {loading ? (
-        <p style={styles.loading}>Loading products...</p>
-      ) : products.length === 0 ? (
-        <p style={styles.noProducts}>No products available.</p>
-      ) : (
-        <div style={styles.grid}>
-          {products.map(product => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-      )}
+      <div style={styles.grid}>
+        {products.map(product => (
+          <ProductCard
+            key={product._id}
+            product={product}
+            liked={wishlist.includes(product._id)}
+            toggleWishlist={toggleWishlist}
+            navigate={navigate}
+          />
+        ))}
+      </div>
     </div>
   );
 }
 
-function ProductCard({ product }) {
+function ProductCard({ product, liked, toggleWishlist, navigate }) {
   const [hover, setHover] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const navigate = useNavigate();
 
   const handleCardClick = () => {
     const slug = slugify(product.name);
@@ -145,6 +191,7 @@ function ProductCard({ product }) {
     color: liked ? 'red' : '#ccc',
     transition: 'color 0.3s',
     marginLeft: '10px',
+    userSelect: 'none',
   };
 
   const titleRowStyle = {
@@ -176,9 +223,11 @@ function ProductCard({ product }) {
               style={heartStyle}
               onClick={(e) => {
                 e.stopPropagation(); // prevent card click
-                setLiked(!liked);
+                toggleWishlist(product._id, liked);
               }}
-              title={liked ? "Remove from wishlist" : "Add to wishlist"}
+              title={liked ? 'Remove from wishlist' : 'Add to wishlist'}
+              role="button"
+              aria-label={liked ? 'Remove from wishlist' : 'Add to wishlist'}
             >
               ♥
             </span>
@@ -186,7 +235,10 @@ function ProductCard({ product }) {
           <div style={styles.description}>{product.description}</div>
         </div>
         <div style={styles.price}>
-          LKR {Number(Number(product.price).toFixed(2)).toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          LKR {Number(Number(product.price).toFixed(2)).toLocaleString('en-LK', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })}
         </div>
       </div>
     </div>

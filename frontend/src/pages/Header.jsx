@@ -4,22 +4,30 @@ import axios from 'axios';
 import { FaSearch, FaShoppingCart, FaUserShield, FaRegUser } from 'react-icons/fa';
 import { IoMdArrowDropdown } from "react-icons/io";
 import './Header.css';
+import Cart from './Cart';
 
 const Header = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/customer/me', { withCredentials: true })
       .then(res => {
-        if (res.data && res.data.username) {
-          setUsername(res.data.username);
-        }
+        if (res.data?.username) setUsername(res.data.username);
       })
-      .catch(() => {
-        setUsername('');
+      .catch(() => setUsername(''));
+
+    // Fetch cart count
+    axios.get('http://localhost:5000/api/cart', { withCredentials: true })
+      .then(res => {
+        setCartCount(res.data.length);
+      })
+      .catch(err => {
+        console.error('Failed to fetch cart:', err);
+        setCartCount(0);
       });
   }, []);
 
@@ -36,8 +44,7 @@ const Header = () => {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
-  const openCartSidebar = () => setCartSidebarOpen(true);
-  const closeCartSidebar = () => setCartSidebarOpen(false);
+  const toggleCart = () => setCartSidebarOpen(!cartSidebarOpen);
 
   const handleNavigate = (category, gender) => {
     navigate(`/${gender.toLowerCase()}/${category.toLowerCase()}`);
@@ -60,16 +67,15 @@ const Header = () => {
         </div>
 
         <nav className="nav-links">
-          <FaShoppingCart className="cart-icon" onClick={openCartSidebar} />
+          <div className="cart-icon-wrapper" onClick={toggleCart}>
+            <FaShoppingCart className="cart-icon" />
+            {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
+          </div>
 
           <div className="dropdown">
             <button className="dropbtn">Brands <IoMdArrowDropdown /></button>
             <div className="dropdown-content">
-              <span>Nike</span>
-              <span>Adidas</span>
-              <span>Carnage</span>
-              <span>Moose</span>
-              <span>ODEL</span>
+              <span>Nike</span><span>Adidas</span><span>Carnage</span><span>Moose</span><span>ODEL</span>
             </div>
           </div>
 
@@ -77,7 +83,7 @@ const Header = () => {
 
           <div className="dropdown">
             <button className="dropbtn">
-              <FaRegUser /> {username ? `${username}` : 'Welcome !'} <IoMdArrowDropdown />
+              <FaRegUser /> {username ? username : 'Welcome !'} <IoMdArrowDropdown />
             </button>
             <div className="dropdown-content">
               {username ? (
@@ -98,7 +104,6 @@ const Header = () => {
         <FaUserShield className="admin-icon" onClick={() => navigate('/admin-login')} />
       </header>
 
-      {/* Overlays */}
       {(sidebarOpen || cartSidebarOpen) && (
         <div className="overlay" onClick={() => { setSidebarOpen(false); setCartSidebarOpen(false); }}></div>
       )}
@@ -108,15 +113,9 @@ const Header = () => {
         <div className="sidebar-top">
           <span className="close-btn" onClick={closeSidebar}>×</span>
         </div>
-
-        <div className="sidebar-heading">
-          <h4>Shop By Category</h4>
-        </div>
-
+        <div className="sidebar-heading"><h4>Shop By Category</h4></div>
         <div className="sidebar-links">
           <span onClick={() => { navigate('/shop'); closeSidebar(); }}>All</span>
-
-          {/* Men Hover Dropdown */}
           <div className="sidebar-dropdown-group">
             <span className="sidebar-link" onClick={() => { navigate('/men'); closeSidebar(); }}>
               Men ▾
@@ -127,8 +126,6 @@ const Header = () => {
               <span onClick={() => handleNavigate('Shoes', 'Men')}>Shoes</span>
             </div>
           </div>
-
-          {/* Women Hover Dropdown */}
           <div className="sidebar-dropdown-group">
             <span className="sidebar-link" onClick={() => { navigate('/women'); closeSidebar(); }}>
               Women ▾
@@ -139,8 +136,6 @@ const Header = () => {
               <span onClick={() => handleNavigate('Shoes', 'Women')}>Shoes</span>
             </div>
           </div>
-
-          {/* Fixed Links */}
           <span onClick={() => { navigate('/kids'); closeSidebar(); }}>Kids</span>
           <span onClick={() => { navigate('/category/bags'); closeSidebar(); }}>Bags</span>
           <span onClick={() => { navigate('/category/accessories'); closeSidebar(); }}>Accessories</span>
@@ -148,26 +143,7 @@ const Header = () => {
       </div>
 
       {/* Cart Sidebar */}
-      <div className={`cart-sidebar ${cartSidebarOpen ? 'open' : ''}`}>
-        <div className="cart-sidebar-header">
-          <h3>Your Cart</h3>
-          <span className="close-btn" onClick={closeCartSidebar}>×</span>
-        </div>
-        <div className="cart-sidebar-content">
-          <p>Cart item 1</p>
-          <p>Cart item 2</p>
-        </div>
-        <div className="cart-sidebar-footer">
-          <div className="total">
-            <strong>Total</strong>
-            <span className="total-amount">LKR 2900</span>
-          </div>
-          <div className="cart-buttons">
-            <button onClick={closeCartSidebar} className="btn-secondary">Continue Shopping</button>
-            <button onClick={() => { navigate('/checkout'); closeCartSidebar(); }} className="btn-primary">Place Order</button>
-          </div>
-        </div>
-      </div>
+      <Cart isOpen={cartSidebarOpen} onClose={toggleCart} />
     </>
   );
 };

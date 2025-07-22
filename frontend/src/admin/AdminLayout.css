@@ -5,13 +5,12 @@
 }
 
 .admin-sidebar {
-  width: 220px;
+  width: 200px;
   background-color: #222;
   color: white;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
   justify-content: center;
-  /* Center items vertically */
   text-align: center;
 }
 
