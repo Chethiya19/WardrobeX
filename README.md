@@ -55,5 +55,15 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 
 <img width="1345" height="630" alt="image" src="https://github.com/user-attachments/assets/b75b1065-1217-47e9-872e-22083d0ccca4" />
 
+<img width="1344" height="614" alt="image" src="https://github.com/user-attachments/assets/b9618000-c311-40fa-bac3-c09996a91bab" />
+
+<img width="1331" height="544" alt="image" src="https://github.com/user-attachments/assets/8334f64d-600b-48fc-b969-8e3a930f6673" />
+
+### Admin Panel
+
+<img width="1365" height="628" alt="image" src="https://github.com/user-attachments/assets/acfb24a1-a40f-45cb-ae55-e8b62b6460fc" />
+
+
+
 
 
