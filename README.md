@@ -14,14 +14,14 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 - React.js  
 - Axios  
 - React Router DOM  
-- Tailwind CSS or CSS Modules (based on your styling preference)
+- Tailwind CSS or CSS Modules
 
 **Backend**  
 - Node.js  
 - Express.js  
 - MongoDB with Mongoose  
 - JWT Authentication  
-- Multer for image upload (if included)
+- Multer for image upload
 
 ---
 
