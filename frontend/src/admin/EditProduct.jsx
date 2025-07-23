@@ -1,4 +1,3 @@
-// src/admin/EditProduct.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -32,6 +31,7 @@ export default function EditProduct() {
     Shirts: ['S', 'M', 'L', 'XL'],
     Pants: ['28', '30', '32', '34', '36', '38'],
     Frocks: ['S', 'M', 'L', 'XL'],
+    Tops: ['S', 'M', 'L', 'XL'],
     Kids: ['XS', 'S'],
     Shoes: ['6', '7', '8', '9', '10'],
     Bags: [],
@@ -193,27 +193,46 @@ export default function EditProduct() {
           </div>
         </div>
 
-        {/* Sizes & Stock */}
-        {sizes.length > 0 && (
-          <div className="mb-3">
-            <label className="form-label">Set Stock per Size</label>
-            <div className="row">
-              {sizes.map((s, index) => (
-                <div key={index} className="col-md-2 col-4 mb-2">
-                  <div className="input-group">
-                    <span className="input-group-text">{s.sizeLabel}</span>
-                    <input
-                      type="number"
-                      className="form-control"
-                      min="0"
-                      value={s.stock}
-                      onChange={(e) => handleStockChange(index, e.target.value)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Sizes or Stock Count */}
+        {['Bags', 'Accessories'].includes(formData.category) ? (
+          <div className="col-md-6">
+            <label className="form-label">Stock Count</label>
+            <input
+              type="number"
+              className="form-control"
+              value={sizes[0]?.stock || 0}
+              min="0"
+              onChange={(e) =>
+                setSizes([{ sizeLabel: null, stock: Number(e.target.value) }])
+              }
+              required
+            />
           </div>
+        ) : (
+          sizes.length > 0 && (
+            <div className="mb-3">
+              <label className="form-label">Set Stock per Size</label>
+              <div className="row">
+                {sizes.map((s, index) => (
+                  <div key={index} className="col-md-2 col-4 mb-2">
+                    <div className="input-group">
+                      <span className="input-group-text">{s.sizeLabel}</span>
+                      <input
+                        type="number"
+                        className="form-control"
+                        min="0"
+                        value={s.stock}
+                        onChange={(e) =>
+                          handleStockChange(index, e.target.value)
+                        }
+                        required
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
         )}
 
         {/* Brand & Price */}
@@ -264,7 +283,12 @@ export default function EditProduct() {
                 <img
                   src={`http://localhost:5000/uploads/products/${existingImage}`}
                   alt="Current"
-                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    objectFit: 'cover',
+                    borderRadius: '5px'
+                  }}
                 />
               </div>
             </div>
@@ -277,7 +301,12 @@ export default function EditProduct() {
                 <img
                   src={URL.createObjectURL(formData.image)}
                   alt="Preview"
-                  style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '5px' }}
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    objectFit: 'cover',
+                    borderRadius: '5px'
+                  }}
                 />
               </div>
             </div>

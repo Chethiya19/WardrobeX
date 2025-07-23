@@ -34,6 +34,7 @@ const Order = () => {
               <div key={order._id} style={styles.orderCard}>
                 <div style={styles.orderHeader}>
                   <span><strong>Order #{index + 1}</strong></span>
+                  <span>Order ID: {order._id}</span>
                   <span>Status: {order.status}</span>
                   <span>Date: {new Date(order.placedAt).toLocaleDateString()}</span>
                   <span>Total: LKR {order.totalAmount.toFixed(2)}</span>
@@ -41,19 +42,26 @@ const Order = () => {
 
                 <div style={styles.items}>
                   {order.items.map((item, i) => (
-                    <div key={i} style={styles.item}>
-                      <img
-                        src={`http://localhost:5000/uploads/products/${item.productId.images?.[0]}`}
-                        alt={item.productId.name}
-                        style={styles.image}
-                      />
-                      <div>
-                        <div>{item.productId.name}</div>
-                        {item.size && <div>Size: {item.size}</div>}
-                        <div>Qty: {item.quantity}</div>
-                        <div>Price: LKR {item.productId.price.toFixed(2)}</div>
+                    <React.Fragment key={i}>
+                      <div style={styles.itemRow}>
+                        <img
+                          src={`http://localhost:5000/uploads/products/${item.productId.images?.[0]}`}
+                          alt={item.productId.name}
+                          style={styles.image}
+                        />
+                        <div style={styles.itemDetails}>
+                          <div style={styles.column}>{item.productId.name}</div>
+                          <div style={styles.column}>
+                            {item.size && <>Size: {item.size}<br /></>}
+                            Qty: {item.quantity}
+                          </div>
+                          <div style={styles.column}>
+                            LKR {item.productId.price.toFixed(2)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                      {i !== order.items.length - 1 && <hr style={styles.hr} />}
+                    </React.Fragment>
                   ))}
                 </div>
               </div>
@@ -66,12 +74,9 @@ const Order = () => {
 };
 
 const styles = {
-  page: {
-    // paddingTop: '20px',
-  },
+  page: {},
   heading: {
     textAlign: 'center',
-    // marginBottom: '10px',
     color: '#333',
   },
   container: {
@@ -79,7 +84,7 @@ const styles = {
     margin: 'auto',
     fontFamily: 'Segoe UI, sans-serif',
     padding: '10px',
-    height: 'calc(100vh - 120px)', // Adjust height as needed
+    height: 'calc(100vh - 120px)',
     overflowY: 'auto',
   },
   scrollContainer: {
@@ -105,16 +110,27 @@ const styles = {
     fontSize: '14px',
     marginBottom: '15px',
     gap: '10px',
+    color: '#000',
   },
   items: {
-    borderTop: '1px solid #eee',
+    borderTop: '2px solid #eee',
     paddingTop: '15px',
   },
-  item: {
+  itemRow: {
     display: 'flex',
-    gap: '15px',
-    marginBottom: '15px',
     alignItems: 'center',
+    gap: '15px',
+    padding: '10px 0',
+  },
+  itemDetails: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  column: {
+    flex: 1,
+    fontSize: '14px',
+    padding: '0 10px',
   },
   image: {
     width: '70px',
@@ -122,6 +138,11 @@ const styles = {
     objectFit: 'cover',
     borderRadius: '6px',
     border: '1px solid #ddd',
+  },
+  hr: {
+    border: 'none',
+    borderTop: '1px solid #ccc',
+    margin: '0',
   },
 };
 

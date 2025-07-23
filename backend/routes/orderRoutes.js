@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
+const Product = require('../models/Product');
 const customerAuth = require('../middleware/customerAuthMiddleware');
 
 // Place a new order
@@ -12,6 +13,24 @@ router.post('/place', customerAuth, async (req, res) => {
     const cart = await Cart.findOne({ customerId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: 'Cart is empty' });
+    }
+
+    // ✅ Reduce stock before placing order
+    for (const item of cart.items) {
+      const product = await Product.findById(item.productId._id);
+      if (!product) continue;
+
+      const sizeEntry = product.sizes.find(s => s.sizeLabel === item.size);
+      if (!sizeEntry) {
+        return res.status(400).json({ message: `Size ${item.size} not found for ${product.name}` });
+      }
+
+      if (sizeEntry.stock < item.quantity) {
+        return res.status(400).json({ message: `Not enough stock for ${product.name} - ${item.size}` });
+      }
+
+      sizeEntry.stock -= item.quantity;
+      await product.save(); // Save the updated stock
     }
 
     const orderItems = cart.items.map(item => ({

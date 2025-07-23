@@ -6,11 +6,11 @@ const cardSchema = new mongoose.Schema({
     ref: 'Customer',
     required: true
   },
-  cardType: String,         // 'visa' or 'mastercard'
+  cardType: String, 
   cardHolder: String,
-  cardNumber: String,       // last 4 digits visible to frontend
-  expiry: String,           // MM/YY
-  cvv: String,              // optional, avoid saving in production
+  cardNumber: String,
+  expiry: String,
+  cvv: String,
   createdAt: {
     type: Date,
     default: Date.now

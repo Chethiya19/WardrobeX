@@ -10,21 +10,33 @@ export default function ProductDetail() {
     const [selectedSize, setSelectedSize] = useState('');
     const navigate = useNavigate();
 
+    const [sizeStock, setSizeStock] = useState({});
+
     const sizeOptions = {
         Shirts: ['S', 'M', 'L', 'XL'],
         Pants: ['28', '30', '32', '34', '36', '38'],
         Frocks: ['S', 'M', 'L', 'XL'],
         Tops: ['S', 'M', 'L', 'XL'],
         Kids: ['XS', 'S'],
-        Shoes: ['6', '7', '8', '9', '10'],
+        Shoes: ['5', '6', '7', '8', '9', '10'],
         Bags: [],
         Accessories: []
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/api/products/name/${slug}`)
-            .then(res => setProduct(res.data))
-            .catch(() => setProduct(null));
+        const fetchProductAndStock = async () => {
+            try {
+                const res = await axios.get(`http://localhost:5000/api/products/name/${slug}`);
+                setProduct(res.data);
+
+                const stockRes = await axios.get(`http://localhost:5000/api/products/stock/${res.data._id}`);
+                setSizeStock(stockRes.data); // e.g. { S: 10, M: 0, L: 5 }
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        };
+
+        fetchProductAndStock();
     }, [slug]);
 
     if (!product) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading or Product Not Found</div>;
@@ -42,7 +54,10 @@ export default function ProductDetail() {
                 quantity,
             }, { withCredentials: true });
 
-            Swal.fire('Success', res.data.message || 'Product added to cart!', 'success');
+            Swal.fire('Success', res.data.message || 'Product added to cart!', 'success')
+                .then(() => {
+                    window.location.reload();
+                });
         } catch (err) {
             if (err.response?.status === 401) {
                 Swal.fire({
@@ -64,30 +79,57 @@ export default function ProductDetail() {
     };
 
     const renderSizeButtons = () => {
-        const sizes = sizeOptions[product.category] || [];
-        if (!sizes.length) return null;
+        if (!sizeOptions[product.category] || sizeOptions[product.category].length === 0) return null;
 
         return (
-            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                <span style={{ fontWeight: '600', fontSize: '1rem', whiteSpace: 'nowrap' }}>Select Size:</span>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    {sizes.map(size => (
-                        <button
-                            key={size}
-                            onClick={() => setSelectedSize(prev => (prev === size ? '' : size))}
-                            style={{
-                                padding: '8px 16px',
-                                borderRadius: '20px',
-                                border: selectedSize === size ? '2px solid #28a745' : '1px solid #ccc',
-                                backgroundColor: selectedSize === size ? '#e6f9ed' : '#fff',
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                minWidth: '48px',
-                            }}
-                        >
-                            {size}
-                        </button>
-                    ))}
+            <div style={{ marginBottom: '20px' }}>
+                <span style={{ fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                    Select Size:
+                </span>
+
+                <div style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '10px',
+                }}>
+                    {product?.sizes.map(({ sizeLabel }) => {
+                        const isAvailable = sizeStock[sizeLabel] > 0;
+                        const isSelected = selectedSize === sizeLabel;
+
+                        return (
+                            <button
+                                key={sizeLabel}
+                                onClick={() => {
+                                    if (isAvailable) {
+                                        setSelectedSize(prev => prev === sizeLabel ? '' : sizeLabel);
+                                    }
+                                }}
+                                disabled={!isAvailable}
+                                title={!isAvailable ? 'Out of Stock' : ''}
+                                style={{
+                                    padding: '8px 16px',
+                                    borderRadius: '20px',
+                                    border: '2px solid',
+                                    borderColor: isSelected
+                                        ? '#28a745'
+                                        : isAvailable
+                                            ? '#999'
+                                            : '#999',
+                                    borderStyle: isAvailable
+                                        ? 'solid'
+                                        : 'dashed',
+                                    backgroundColor: isSelected ? '#e6f9ed' : '#fff',
+                                    color: isAvailable ? '#000' : '#999',
+                                    cursor: isAvailable ? 'pointer' : 'not-allowed',
+                                    opacity: isAvailable ? 1 : 0.6,
+                                    fontWeight: '600',
+                                    minWidth: '48px',
+                                }}
+                            >
+                                {sizeLabel}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
         );
@@ -134,7 +176,24 @@ export default function ProductDetail() {
                 color: '#333',
             }}>
                 <div>
-                    <h2>{product.name}</h2>
+                    <h2 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>{product.name}</span>
+                        {Object.values(sizeStock).every(count => count === 0) && (
+                            <div style={{
+                                // border: '2px solid rgba(220, 53, 69, 0.7)',
+                                color: '#fff',
+                                backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                                padding: '10px 15px',
+                                borderRadius: '5px',
+                                marginTop: '10px',
+                                fontWeight: 'bold',
+                                fontSize: '1rem',
+                                display: 'inline-block',
+                            }}>
+                                Out of Stock
+                            </div>
+                        )}
+                    </h2>
                     <p>{product.description}</p>
                     <p><strong>Brand:</strong> {product.brand}</p>
                     <p><strong>Category:</strong> {product.category}</p>
@@ -158,28 +217,83 @@ export default function ProductDetail() {
                     <label htmlFor="quantity" style={{ fontWeight: '600', fontSize: '1rem' }}>
                         Quantity:
                     </label>
-                    <input
-                        id="quantity"
-                        type="number"
-                        min="1"
-                        value={quantity}
-                        onChange={(e) => setQuantity(Number(e.target.value))}
-                        style={{ width: '70px', padding: '6px', fontSize: '1rem' }}
-                    />
+
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        border: '1px solid #ccc',
+                        borderRadius: '10px',
+                        overflow: 'hidden',
+                        height: '40px',
+                    }}>
+                        <button
+                            onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                            style={{
+                                backgroundColor: '#f8f9fa',
+                                border: 'none',
+                                padding: '0 12px',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                color: '#333',
+                                height: '100%',
+                            }}
+                        >
+                            –
+                        </button>
+
+                        <input
+                            id="quantity"
+                            type="number"
+                            min="1"
+                            value={quantity}
+                            onChange={(e) => {
+                                const value = parseInt(e.target.value);
+                                if (!isNaN(value) && value > 0) {
+                                    setQuantity(value);
+                                }
+                            }}
+                            style={{
+                                width: '60px',
+                                textAlign: 'center',
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '1rem',
+                                height: '100%',
+                            }}
+                        />
+
+                        <button
+                            onClick={() => setQuantity(prev => prev + 1)}
+                            style={{
+                                backgroundColor: '#f8f9fa',
+                                border: 'none',
+                                padding: '0 12px',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                color: '#333',
+                                height: '100%',
+                            }}
+                        >
+                            +
+                        </button>
+                    </div>
+
                     <button
                         onClick={handleAddToCart}
+                        disabled={Object.values(sizeStock).every(count => count === 0)}
                         style={{
                             padding: '10px 25px',
-                            backgroundColor: '#28a745',
+                            backgroundColor: Object.values(sizeStock).every(count => count === 0) ? '#ccc' : '#28a745',
                             color: '#fff',
                             border: 'none',
                             borderRadius: '6px',
-                            cursor: 'pointer',
+                            cursor: Object.values(sizeStock).every(count => count === 0) ? 'not-allowed' : 'pointer',
                             fontSize: '1rem',
-                            marginLeft: '120px',
+                            marginLeft: 'auto',
+                            fontWeight: 600,
                         }}
                     >
-                        Add to Cart
+                        {Object.values(sizeStock).every(count => count === 0) ? 'Unavailable' : 'Add to Cart'}
                     </button>
                 </div>
             </div>

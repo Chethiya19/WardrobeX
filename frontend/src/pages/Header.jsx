@@ -56,7 +56,7 @@ const Header = () => {
       <header className="header">
         <div className="left-section">
           <div className="menu-icon" onClick={toggleSidebar}>☰</div>
-          <div className="logo" onClick={() => navigate('/')}>WardrobeX</div>
+          <div className="logo" onClick={() => window.location.href = '/'}>WardrobeX</div>
         </div>
 
         <div className="center-section">
@@ -74,8 +74,15 @@ const Header = () => {
 
           <div className="dropdown">
             <button className="dropbtn">Brands <IoMdArrowDropdown /></button>
-            <div className="dropdown-content">
-              <span>Nike</span><span>Adidas</span><span>Carnage</span><span>Moose</span><span>ODEL</span>
+            <div className="dropdown-content" >
+              <span onClick={() => navigate('/brand/nike')}>Nike</span>
+              <span onClick={() => navigate('/brand/adidas')}>Adidas</span>
+              <span onClick={() => navigate('/brand/carnage')}>Carnage</span>
+              <span onClick={() => navigate('/brand/moose')}>Moose</span>
+              <span onClick={() => navigate('/brand/ODEL')}>ODEL</span> 
+              <span onClick={() => navigate('/brand/NOLIMIT')}>NOLIMIT</span>
+              <span onClick={() => navigate('/brand/emerald')}>Emerald</span>
+              <span onClick={() => navigate('/brand/DSI')}>DSI</span>
             </div>
           </div>
 
@@ -131,8 +138,9 @@ const Header = () => {
               Women ▾
             </span>
             <div className="sidebar-dropdown-content">
-              <span onClick={() => handleNavigate('Frocks', 'Women')}>Frocks</span>
               <span onClick={() => handleNavigate('Tops', 'Women')}>Tops</span>
+              <span onClick={() => handleNavigate('Pants', 'Women')}>Pants</span>
+              <span onClick={() => handleNavigate('Frocks', 'Women')}>Frocks</span>
               <span onClick={() => handleNavigate('Shoes', 'Women')}>Shoes</span>
             </div>
           </div>

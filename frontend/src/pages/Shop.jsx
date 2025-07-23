@@ -33,6 +33,7 @@ const styles = {
     width: '100%',
     maxHeight: '300px',
     overflow: 'hidden',
+    position: 'relative',
   },
   img: {
     width: '100%',
@@ -40,6 +41,20 @@ const styles = {
     objectFit: 'contain',
     display: 'block',
     backgroundColor: '#f8f8f8',
+  },
+  outOfStockOverlay: {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    padding: '6px 14px',
+    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+    color: '#fff',
+    fontSize: '0.85rem',
+    fontWeight: '600',
+    borderBottomRightRadius: '8px',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    zIndex: 2,
   },
   cardBody: {
     padding: '16px',
@@ -123,34 +138,34 @@ export default function Shop() {
   }, []);
 
   const toggleWishlist = async (productId, liked) => {
-  if (!loggedIn) {
-    Swal.fire({
-      title: 'Login Required',
-      text: 'You must be logged in to add to your wishlist.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Login',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate('/customer-login');
-      }
-    });
-    return;
-  }
-
-  try {
-    if (liked) {
-      await axios.delete(`http://localhost:5000/api/wishlist/remove/${productId}`, { withCredentials: true });
-      setWishlist(prev => prev.filter(id => id !== productId));
-    } else {
-      await axios.post(`http://localhost:5000/api/wishlist/add/${productId}`, {}, { withCredentials: true });
-      setWishlist(prev => [...prev, productId]);
+    if (!loggedIn) {
+      Swal.fire({
+        title: 'Login Required',
+        text: 'You must be logged in to add to your wishlist.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Login',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/customer-login');
+        }
+      });
+      return;
     }
-  } catch (err) {
-    Swal.fire('Error', 'Error updating wishlist. Please try again.', 'error');
-  }
-};
+
+    try {
+      if (liked) {
+        await axios.delete(`http://localhost:5000/api/wishlist/remove/${productId}`, { withCredentials: true });
+        setWishlist(prev => prev.filter(id => id !== productId));
+      } else {
+        await axios.post(`http://localhost:5000/api/wishlist/add/${productId}`, {}, { withCredentials: true });
+        setWishlist(prev => [...prev, productId]);
+      }
+    } catch (err) {
+      Swal.fire('Error', 'Error updating wishlist. Please try again.', 'error');
+    }
+  };
 
   if (loading) {
     return <p style={styles.loading}>Loading products...</p>;
@@ -185,6 +200,11 @@ function ProductCard({ product, liked, toggleWishlist, navigate }) {
     navigate(`/product/${slug}`);
   };
 
+  // Calculate out of stock by summing sizes stock or fallback to false
+  const isOutOfStock = product.sizes
+    ? product.sizes.reduce((acc, size) => acc + (size.stock || 0), 0) === 0
+    : false;
+
   const heartStyle = {
     cursor: 'pointer',
     fontSize: '1.8rem',
@@ -214,6 +234,11 @@ function ProductCard({ product, liked, toggleWishlist, navigate }) {
           alt={product.name}
           style={styles.img}
         />
+        {isOutOfStock && (
+          <div style={styles.outOfStockOverlay}>
+            Out of Stock
+          </div>
+        )}
       </div>
       <div style={styles.cardBody}>
         <div>

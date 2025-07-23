@@ -13,8 +13,9 @@ export default function AddProduct() {
     Shirts: ['S', 'M', 'L', 'XL'],
     Pants: ['28', '30', '32', '34', '36', '38'],
     Frocks: ['S', 'M', 'L', 'XL'],
+    Tops: ['S', 'M', 'L', 'XL'],
     Kids: ['XS', 'S'],
-    Shoes: ['6', '7', '8', '9', '10'],
+    Shoes: ['5', '6', '7', '8', '9', '10'],
     Bags: [],
     Accessories: []
   };
@@ -29,7 +30,12 @@ export default function AddProduct() {
     image: null,
   });
 
+  // For sizes stock (array of { sizeLabel, stock })
   const [sizes, setSizes] = useState([]);
+
+  // For Bags and Accessories single stock count
+  const [singleStockCount, setSingleStockCount] = useState(0);
+
   const [imagePreview, setImagePreview] = useState(null);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
@@ -40,8 +46,17 @@ export default function AddProduct() {
 
     if (name === 'category') {
       setFormData(prev => ({ ...prev, [name]: value }));
-      const selectedSizes = sizeOptions[value] || [];
-      setSizes(selectedSizes.map(size => ({ sizeLabel: size, stock: 0 })));
+
+      if (value === 'Bags' || value === 'Accessories') {
+        // Clear sizes and reset single stock count
+        setSizes([]);
+        setSingleStockCount(0);
+      } else {
+        // Setup sizes array based on category
+        const selectedSizes = sizeOptions[value] || [];
+        setSizes(selectedSizes.map(size => ({ sizeLabel: size, stock: 0 })));
+        setSingleStockCount(0);
+      }
     } else if (name === 'image') {
       const file = files[0];
       setFormData(prev => ({ ...prev, image: file }));
@@ -63,6 +78,10 @@ export default function AddProduct() {
     setSizes(updated);
   };
 
+  const handleSingleStockChange = (value) => {
+    setSingleStockCount(Number(value));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -76,7 +95,14 @@ export default function AddProduct() {
       if (key !== 'image') form.append(key, val);
     });
     form.append('image', formData.image);
-    form.append('sizes', JSON.stringify(sizes));
+
+    // Append sizes or single stock accordingly
+    if (formData.category === 'Bags' || formData.category === 'Accessories') {
+      form.append('stock', singleStockCount);
+      form.append('sizes', JSON.stringify([])); // empty sizes
+    } else {
+      form.append('sizes', JSON.stringify(sizes));
+    }
 
     try {
       await axios.post('http://localhost:5000/api/admin/products/add', form, {
@@ -165,7 +191,8 @@ export default function AddProduct() {
           </div>
         </div>
 
-        {sizes.length > 0 && (
+        {/* Size-wise stock inputs */}
+        {(formData.category && formData.category !== 'Bags' && formData.category !== 'Accessories' && sizes.length > 0) && (
           <div className="mb-3">
             <label className="form-label">Set Stock per Size</label>
             <div className="row">
@@ -185,6 +212,21 @@ export default function AddProduct() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Single stock input for Bags and Accessories */}
+        {(formData.category === 'Bags' || formData.category === 'Accessories') && (
+          <div className="col-md-6">
+            <label className="form-label">Stock Count</label>
+            <input
+              type="number"
+              className="form-control"
+              min="0"
+              value={singleStockCount}
+              onChange={(e) => handleSingleStockChange(e.target.value)}
+              required
+            />
           </div>
         )}
 
@@ -225,47 +267,46 @@ export default function AddProduct() {
               accept="image/*"
               onChange={handleInputChange}
               required
-
             />
-            </div>
-              {imagePreview && (
-                <div className="col-md-6">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '6px' }}
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="text-center">
-              <button type="submit" className="btn btn-primary px-5">
-                Add Product
-              </button>
-            </div>
-          </form>
-
-          {/* ✅ Stylish message box */}
-          {showMessageBox && (
-            <div
-              style={{
-                position: "fixed",
-                bottom: "30px",
-                right: "30px",
-                padding: "15px 25px",
-                backgroundColor: messageType === 'success' ? "#4BB543" : "#dc3545",
-                color: "#fff",
-                borderRadius: "5px",
-                boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-                zIndex: 1050,
-                fontWeight: '500',
-                fontSize: '16px'
-              }}
-            >
-              {message}
+          </div>
+          {imagePreview && (
+            <div className="col-md-6 d-flex align-items-center">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '6px' }}
+              />
             </div>
           )}
         </div>
-        );
+
+        <div className="text-center">
+          <button type="submit" className="btn btn-primary px-5">
+            Add Product
+          </button>
+        </div>
+      </form>
+
+      {/* Stylish message box */}
+      {showMessageBox && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "30px",
+            right: "30px",
+            padding: "15px 25px",
+            backgroundColor: messageType === 'success' ? "#4BB543" : "#dc3545",
+            color: "#fff",
+            borderRadius: "5px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+            zIndex: 1050,
+            fontWeight: '500',
+            fontSize: '16px'
+          }}
+        >
+          {message}
+        </div>
+      )}
+    </div>
+  );
 }

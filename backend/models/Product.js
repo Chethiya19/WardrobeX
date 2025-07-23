@@ -7,7 +7,7 @@ const sizeSchema = new mongoose.Schema({
 }, { _id: false });
 
 const productSchema = new mongoose.Schema({
-  productId: { type: Number, unique: true }, // Auto-incremented ID
+  productId: { type: Number, unique: true },
 
   name: { type: String, required: true },
   category: {

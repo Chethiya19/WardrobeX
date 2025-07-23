@@ -1,3 +1,4 @@
+// FilterProducts.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -39,6 +40,7 @@ const styles = {
         width: '100%',
         maxHeight: 300,
         overflow: 'hidden',
+        position: 'relative',
     },
     img: {
         width: '100%',
@@ -46,6 +48,20 @@ const styles = {
         objectFit: 'contain',
         display: 'block',
         backgroundColor: '#f8f8f8',
+    },
+    outOfStockOverlay: {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        padding: '6px 14px',
+        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+        color: '#fff',
+        fontSize: '0.85rem',
+        fontWeight: '600',
+        borderBottomRightRadius: '8px',
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
+        zIndex: 2,
     },
     cardBody: {
         padding: 16,
@@ -90,7 +106,7 @@ function slugify(text) {
 }
 
 export default function FilterProducts() {
-    const { gender, category } = useParams();
+    const { gender, category, brand } = useParams();
     const [products, setProducts] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -99,7 +115,9 @@ export default function FilterProducts() {
 
     const capitalize = (str) => str?.charAt(0).toUpperCase() + str?.slice(1);
 
-    const heading = gender
+    const heading = brand
+    ? capitalize(brand)
+    : gender
         ? capitalize(gender) + (category ? ` / ${capitalize(category)}` : '')
         : category
             ? capitalize(category)
@@ -116,6 +134,8 @@ export default function FilterProducts() {
                     url = `http://localhost:5000/api/products/category/${category}`;
                 } else if (gender) {
                     url = `http://localhost:5000/api/products/gender/${gender}`;
+                } else if (brand) {
+                    url = `http://localhost:5000/api/products/brand/${brand}`;
                 } else {
                     url = `http://localhost:5000/api/products`;
                 }
@@ -140,7 +160,7 @@ export default function FilterProducts() {
         }
 
         fetchData();
-    }, [gender, category]);
+    }, [gender, category, brand]);
 
     const toggleWishlist = async (productId, liked) => {
         if (!loggedIn) {
@@ -204,6 +224,10 @@ function ProductCard({ product, liked, toggleWishlist, navigate }) {
         navigate(`/product/${slug}`);
     };
 
+    const isOutOfStock = product.sizes
+        ? product.sizes.reduce((acc, size) => acc + (size.stock || 0), 0) === 0
+        : false;
+
     const heartStyle = {
         cursor: 'pointer',
         fontSize: '1.8rem',
@@ -232,6 +256,9 @@ function ProductCard({ product, liked, toggleWishlist, navigate }) {
                     alt={product.name}
                     style={styles.img}
                 />
+                {isOutOfStock && (
+                    <div style={styles.outOfStockOverlay}>Out of Stock</div>
+                )}
             </div>
             <div style={styles.cardBody}>
                 <div>

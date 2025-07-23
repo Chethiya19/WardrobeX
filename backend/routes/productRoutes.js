@@ -80,4 +80,39 @@ router.get('/gender/:genderSlug', async (req, res) => {
   }
 });
 
+// Get products by brand only
+router.get('/brand/:brandSlug', async (req, res) => {
+  try {
+    const { brandSlug } = req.params;
+
+    const products = await Product.find({
+      brand: { $regex: new RegExp(`^${brandSlug}$`, 'i') },
+    }).sort({ productId: 1 });
+
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch products by brand only' });
+  }
+});
+
+// Get stock info for a specific product (size-wise)
+router.get('/stock/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).select('sizes');
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const stockMap = {};
+    product.sizes.forEach(sizeObj => {
+      stockMap[sizeObj.sizeLabel] = sizeObj.stock;
+    });
+
+    res.json(stockMap); // e.g. { S: 10, M: 0, L: 5 }
+  } catch (err) {
+    console.error('Error fetching stock info:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 module.exports = router;

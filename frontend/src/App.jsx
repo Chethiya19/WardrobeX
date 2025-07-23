@@ -43,6 +43,7 @@ function App() {
         <Route path="/:gender/:category" element={<FilterProducts />} />
         <Route path="/:gender" element={<FilterProducts />} />
         <Route path="/category/:category" element={<FilterProducts />} />
+        <Route path="/brand/:brand" element={<FilterProducts />} />
         <Route path="/shop" element={<FilterProducts />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/payment" element={<Payment />} />

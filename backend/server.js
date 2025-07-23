@@ -40,7 +40,7 @@ app.use('/api/admin', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/products', adminProductRoutes);
 app.use('/api/customer', customerAuthRoutes);
-app.use('/api/products', productRoutes); // ✅ for frontend product grid
+app.use('/api/products', productRoutes);
 app.use('/api/account-details', accountDetailsRoute);
 app.use('/api/address', addressRoute);
 app.use('/api/wishlist', wishlistRoutes);
