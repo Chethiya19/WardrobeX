@@ -34,6 +34,7 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 - Place orders with card payment options
 - View order history
 - Responsive UI across devices
+- Manage account details and change password
 
 ### 🛠️ Admin
 - Secure login
