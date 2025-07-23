@@ -49,4 +49,11 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 - Separate login & register routes for both user roles
 - Protected routes with token verification
 
+----
+
+## UI Desgins 
+
+<img width="1345" height="630" alt="image" src="https://github.com/user-attachments/assets/b75b1065-1217-47e9-872e-22083d0ccca4" />
+
+
 
