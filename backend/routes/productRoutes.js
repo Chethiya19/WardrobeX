@@ -11,7 +11,7 @@ function slugify(text) {
     .replace(/[\s\W-]+/g, '-');
 }
 
-// ✅ Get all products
+// Get all products
 router.get('/', async (req, res) => {
   try {
     const products = await Product.find().sort({ productId: 1 });
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ✅ Get product by slugified name
+// Get product by slugified name
 router.get('/name/:slug', async (req, res) => {
   try {
     const slug = req.params.slug;
@@ -34,7 +34,7 @@ router.get('/name/:slug', async (req, res) => {
   }
 });
 
-// ✅ Get products by category + gender (must come before individual category/gender routes)
+// Get products by category + gender (must come before individual category/gender routes)
 router.get('/category/:categorySlug/gender/:genderSlug', async (req, res) => {
   try {
     const { categorySlug, genderSlug } = req.params;
@@ -50,7 +50,7 @@ router.get('/category/:categorySlug/gender/:genderSlug', async (req, res) => {
   }
 });
 
-// ✅ Get products by category only
+// Get products by category only
 router.get('/category/:categorySlug', async (req, res) => {
   try {
     const { categorySlug } = req.params;
@@ -65,7 +65,7 @@ router.get('/category/:categorySlug', async (req, res) => {
   }
 });
 
-// ✅ Get products by gender only
+// Get products by gender only
 router.get('/gender/:genderSlug', async (req, res) => {
   try {
     const { genderSlug } = req.params;

@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    // ✅ Send Welcome Email
+    // Send Welcome Email
     await sendEmail(
       email,
       'Welcome to WardrobeX – Style Starts Here!',
@@ -125,7 +125,7 @@ router.get('/me', customerAuth, async (req, res) => {
   }
 });
 
-// ✅ Reset password
+// Reset password
 router.post('/reset-password', customerAuth, async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 

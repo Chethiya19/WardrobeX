@@ -20,7 +20,7 @@ router.post('/place', customerAuth, async (req, res) => {
     // Deep copy of cart items before clearing
     const orderedItems = JSON.parse(JSON.stringify(cart.items));
 
-    // ✅ Update product stock
+    // Update product stock
     for (const item of cart.items) {
       const product = await Product.findById(item.productId._id);
       if (!product) continue;
@@ -61,13 +61,13 @@ router.post('/place', customerAuth, async (req, res) => {
 
     await newOrder.save();
 
-    // ✅ Clear cart after backup
+    // Clear cart after backup
     cart.items = [];
     await cart.save();
 
     const customer = await Customer.findById(customerId);
 
-    // ✅ Prepare Text Summary
+    // Prepare Text Summary
     let textSummary = `
 Product                         Size     Qty     Price
 --------------------------------------------------------
@@ -100,7 +100,7 @@ Thanks again!
 If you didn’t place this order, please contact us immediately.
 `;
 
-    // ✅ Prepare HTML Summary
+    // Prepare HTML Summary
     let htmlSummary = `
 <table style="width: 100%; border-collapse: collapse;">
   <thead>

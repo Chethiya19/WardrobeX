@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Card = require('../models/Card');
-const verifyCustomer = require('../middleware/customerAuthMiddleware'); // JWT middleware
+const verifyCustomer = require('../middleware/customerAuthMiddleware');
 
 // @desc    Save card details
 // @route   POST /api/cards/save
