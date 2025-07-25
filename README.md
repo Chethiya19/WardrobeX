@@ -30,10 +30,10 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 ### 🧍‍♂️ Customer
 - Register & login
 - Browse products by category, brand, and gender
-- Add to cart / wishlist
+- Search products by typing in search bar
+- Add to cart & wishlist
 - Place orders with card payment options
 - View order history
-- Responsive UI across devices
 - Manage account details and change password
 
 ### 🛠️ Admin
