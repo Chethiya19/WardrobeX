@@ -33,7 +33,7 @@ export default function EditProduct() {
     Frocks: ['S', 'M', 'L', 'XL'],
     Tops: ['S', 'M', 'L', 'XL'],
     Kids: ['XS', 'S'],
-    Shoes: ['6', '7', '8', '9', '10'],
+    Shoes: ['5', '6', '7', '8', '9', '10'],
     Bags: [],
     Accessories: [],
   };

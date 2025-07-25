@@ -91,6 +91,7 @@ export default function ViewProducts() {
                   <th style={thStyle}>ID</th>
                   <th style={thStyle}>Image</th>
                   <th style={thStyle}>Name</th>
+                  <th style={thStyle}>Brand</th>
                   <th style={thStyle}>Category</th>
                   <th style={thStyle}>Gender</th>
                   <th style={thStyle}>Price (Rs.)</th>
@@ -113,6 +114,7 @@ export default function ViewProducts() {
                       )}
                     </td>
                     <td style={tdStyle}>{prod.name}</td>
+                    <td style={tdStyle}>{prod.brand}</td>
                     <td style={tdStyle}>{prod.category}</td>
                     <td style={tdStyle}>{prod.gender}</td>
                     <td style={tdStyle}>

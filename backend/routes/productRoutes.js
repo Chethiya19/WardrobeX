@@ -115,4 +115,28 @@ router.get('/stock/:id', async (req, res) => {
   }
 });
 
+// GET /api/products/search?q=keyword
+router.get('/search', async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.status(400).json({ error: 'Query parameter q is required' });
+
+    const regex = new RegExp(q, 'i'); // case-insensitive search
+
+    const products = await Product.find({
+      $or: [
+        { name: regex },
+        { brand: regex },
+        { category: regex },
+        { description: regex }
+      ]
+    }).limit(50);
+
+    res.json(products);
+  } catch (err) {
+    console.error('Search error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

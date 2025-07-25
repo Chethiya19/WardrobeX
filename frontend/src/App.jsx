@@ -9,6 +9,7 @@ import ProductDetail from './pages/ProductDetail';
 import FilterProducts from './pages/FilterProducts';
 import Checkout from './pages/Checkout';
 import Payment from './pages/Payment';
+import SearchResults from './pages/SearchResults';
 
 import CustomerLayout from './customer/CustomerLayout';
 import CustomerDashboard from './customer/CustomerDashboard';
@@ -47,6 +48,7 @@ function App() {
         <Route path="/shop" element={<FilterProducts />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/checkout/payment" element={<Payment />} />
+        <Route path="/search" element={<SearchResults />} />
 
         <Route element={<CustomerLayout />}>
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />

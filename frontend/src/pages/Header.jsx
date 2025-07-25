@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaSearch, FaShoppingCart, FaUserShield, FaRegUser } from 'react-icons/fa';
 import { IoMdArrowDropdown } from "react-icons/io";
+import { TiThMenu } from 'react-icons/ti';
 import './Header.css';
 import Cart from './Cart';
 
@@ -12,6 +13,7 @@ const Header = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartSidebarOpen, setCartSidebarOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/customer/me', { withCredentials: true })
@@ -51,19 +53,37 @@ const Header = () => {
     closeSidebar();
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim() !== '') {
+      navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      // setSearchTerm('');
+    }
+  };
+
   return (
     <>
       <header className="header">
         <div className="left-section">
-          <div className="menu-icon" onClick={toggleSidebar}>☰</div>
+          <div className="menu-icon" onClick={toggleSidebar}>
+            <TiThMenu size={28} />
+          </div>
           <div className="logo" onClick={() => window.location.href = '/'}>WardrobeX</div>
         </div>
 
         <div className="center-section">
-          <div className="search-container">
-            <input type="text" placeholder="Search Products" className="search-bar" />
-            <FaSearch className="search-icon" />
-          </div>
+          <form onSubmit={handleSearchSubmit} className="search-container">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="search-bar"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button type="submit" className="search-icon-btn" aria-label="Search">
+              <FaSearch className="search-icon" />
+            </button>
+          </form>
         </div>
 
         <nav className="nav-links">
@@ -79,7 +99,7 @@ const Header = () => {
               <span onClick={() => navigate('/brand/adidas')}>Adidas</span>
               <span onClick={() => navigate('/brand/carnage')}>Carnage</span>
               <span onClick={() => navigate('/brand/moose')}>Moose</span>
-              <span onClick={() => navigate('/brand/ODEL')}>ODEL</span> 
+              <span onClick={() => navigate('/brand/ODEL')}>ODEL</span>
               <span onClick={() => navigate('/brand/NOLIMIT')}>NOLIMIT</span>
               <span onClick={() => navigate('/brand/emerald')}>Emerald</span>
               <span onClick={() => navigate('/brand/DSI')}>DSI</span>
