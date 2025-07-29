@@ -91,7 +91,7 @@ export default function CustomerLogin() {
 const styles = {
   wrapper: {
     display: 'flex',
-    height: '100vh',
+    height: '91vh',
     fontFamily: 'Segoe UI, sans-serif',
     backgroundColor: '#f8f9fa',
   },

@@ -100,7 +100,7 @@ const Header = () => {
               <span onClick={() => navigate('/brand/carnage')}>Carnage</span>
               <span onClick={() => navigate('/brand/moose')}>Moose</span>
               <span onClick={() => navigate('/brand/ODEL')}>ODEL</span>
-              <span onClick={() => navigate('/brand/NOLIMIT')}>NOLIMIT</span>
+              <span onClick={() => navigate('/brand/Gucci')}>GUCCI</span>
               <span onClick={() => navigate('/brand/emerald')}>Emerald</span>
               <span onClick={() => navigate('/brand/DSI')}>DSI</span>
             </div>

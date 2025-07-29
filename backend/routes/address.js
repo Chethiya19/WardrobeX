@@ -3,72 +3,79 @@ const router = express.Router();
 const Address = require('../models/Address');
 const customerAuth = require('../middleware/customerAuthMiddleware');
 
-// GET /api/address/view
+// GET all addresses of logged-in customer
 router.get('/view', customerAuth, async (req, res) => {
   try {
-    const address = await Address.findOne({ customerId: req.user._id });
-    res.json(address || {});
-  } catch (err) {
-    console.error('Error fetching address:', err);
+    // Find all addresses where customerId matches logged-in user's ID
+    const addresses = await Address.find({ customerId: req.user._id });
+
+    res.json(addresses);
+  } catch (error) {
+    console.error('Error fetching addresses:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// POST /api/address/save (Create new or update if already exists)
-router.post('/save', customerAuth, async (req, res) => {
+// POST add new address for logged-in customer
+router.post('/add', customerAuth, async (req, res) => {
   try {
     const { street, city, district, province, zipcode, landmark } = req.body;
 
-    let address = await Address.findOne({ customerId: req.user._id });
+    const newAddress = new Address({
+      customerId: req.user._id,
+      street,
+      city,
+      district,
+      province,
+      zipcode,
+      landmark,
+    });
 
-    if (address) {
-      // Update existing
-      address.street = street;
-      address.city = city;
-      address.district = district;
-      address.province = province;
-      address.zipcode = zipcode;
-      address.landmark = landmark;
-      await address.save();
-      res.json({ message: 'Address updated successfully' });
-    } else {
-      // Create new
-      const newAddress = new Address({
-        customerId: req.user._id,
-        street,
-        city,
-        district,
-        province,
-        zipcode,
-        landmark,
-      });
-      await newAddress.save();
-      res.json({ message: 'Address created successfully' });
-    }
-  } catch (err) {
-    console.error('Error saving address:', err);
+    await newAddress.save();
+    res.status(201).json({ message: 'Address created successfully', address: newAddress });
+  } catch (error) {
+    console.error('Error creating address:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// PUT /api/address/update (Update explicitly)
-router.put('/update', customerAuth, async (req, res) => {
+// PUT update address by ID
+router.put('/update/:id', customerAuth, async (req, res) => {
   try {
     const { street, city, district, province, zipcode, landmark } = req.body;
 
-    const updated = await Address.findOneAndUpdate(
-      { customerId: req.user._id },
+    const updatedAddress = await Address.findOneAndUpdate(
+      { _id: req.params.id, customerId: req.user._id },
       { street, city, district, province, zipcode, landmark },
       { new: true }
     );
 
-    if (!updated) {
-      return res.status(404).json({ message: 'Address not found' });
+    if (!updatedAddress) {
+      return res.status(404).json({ message: 'Address not found or not authorized' });
     }
 
-    res.json({ message: 'Address updated successfully', updated });
-  } catch (err) {
-    console.error('Error updating address:', err);
+    res.json({ message: 'Address updated successfully', address: updatedAddress });
+  } catch (error) {
+    console.error('Error updating address:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// DELETE address by ID
+router.delete('/delete/:id', customerAuth, async (req, res) => {
+  try {
+    const deletedAddress = await Address.findOneAndDelete({
+      _id: req.params.id,
+      customerId: req.user._id,
+    });
+
+    if (!deletedAddress) {
+      return res.status(404).json({ message: 'Address not found or not authorized' });
+    }
+
+    res.json({ message: 'Address deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting address:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

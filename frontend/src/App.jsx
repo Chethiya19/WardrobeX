@@ -29,6 +29,7 @@ import ViewProducts from './admin/ViewProducts';
 import AddProduct from './admin/AddProduct';
 import EditProduct from './admin/EditProduct';
 import ManageOrders from './admin/ManageOrders';
+import OutOfStockProducts from './admin/OutOfStockProducts';
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
         <Route path="/admin/product/add" element={<AddProduct />} />
         <Route path="/admin/product/edit/:id" element={<EditProduct />} />
         <Route path="/admin/orders" element={<ManageOrders />} />
+        <Route path="/admin/out-of-stock" element={<OutOfStockProducts />} />
       </Route>
 
       {/* Admin Auth Pages (standalone) */}

@@ -54,6 +54,12 @@ export default function AdminLayout() {
               >
                 Orders
               </li>
+              <li
+                className={isActive('/admin/out-of-stock') ? 'selected' : ''}
+                onClick={() => navigate('/admin/out-of-stock')}
+              >
+                Out Of Stock Products
+              </li>
             </ul>
           </nav>
         </div>

@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default function AccountSecurity() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleReset = (e) => {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      setMessage('❌ New password and confirm password do not match.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Mismatch!',
+        text: 'New password and confirm password do not match.',
+        confirmButtonColor: '#d33'
+      });
       return;
     }
 
@@ -20,14 +25,24 @@ export default function AccountSecurity() {
       newPassword,
     }, { withCredentials: true })
       .then((res) => {
-        setMessage('✅ Password reset successfully.');
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Password reset successfully.',
+          confirmButtonColor: '#000'
+        });
         setOldPassword('');
         setNewPassword('');
         setConfirmPassword('');
       })
       .catch((err) => {
         console.error(err);
-        setMessage('❌ Failed to reset password.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: err.response?.data?.message || 'Failed to reset password.',
+          confirmButtonColor: '#d33'
+        });
       });
   };
 
@@ -83,19 +98,6 @@ export default function AccountSecurity() {
             Reset Password
           </button>
         </form>
-
-        {message && (
-          <div
-            className="mt-4 p-3 rounded"
-            style={{
-              backgroundColor: message.includes('✅') ? '#d4edda' : '#f8d7da',
-              color: message.includes('✅') ? '#155724' : '#721c24',
-              border: `1px solid ${message.includes('✅') ? '#c3e6cb' : '#f5c6cb'}`
-            }}
-          >
-            {message}
-          </div>
-        )}
       </div>
 
       <div className="card-footer text-muted text-center bg-light rounded-bottom-4">

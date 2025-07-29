@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function CustomerDashboard() {
   const [user, setUser] = useState(null);
@@ -13,7 +14,6 @@ export default function CustomerDashboard() {
     axios.get('http://localhost:5000/api/customer/me', { withCredentials: true })
       .then(res => {
         setUser(res.data);
-        // Then fetch account details
         return axios.get('http://localhost:5000/api/account-details/me', { withCredentials: true });
       })
       .then(res => {
@@ -36,11 +36,21 @@ export default function CustomerDashboard() {
       phone
     }, { withCredentials: true })
       .then(res => {
-        alert('Account details saved successfully!');
+        Swal.fire({
+          icon: 'success',
+          title: 'Saved!',
+          text: 'Account details saved successfully.',
+          confirmButtonColor: '#000'
+        });
       })
       .catch(err => {
         console.error(err);
-        alert('Failed to save account details');
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops!',
+          text: 'Failed to save account details.',
+          confirmButtonColor: '#d33'
+        });
       });
   };
 
