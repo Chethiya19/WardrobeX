@@ -69,6 +69,9 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 
 <img width="1353" height="627" alt="image" src="https://github.com/user-attachments/assets/e8d4d0ae-3eb1-4393-ae18-f7075ee3cd7f" />
 
+<img width="1365" height="629" alt="image" src="https://github.com/user-attachments/assets/e33a1cd1-cfdb-45e8-978b-207ed4f9f20f" />
+
+
 
 
 
