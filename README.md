@@ -41,6 +41,7 @@ Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 - Dashboard for product management (add/edit/delete products)
 - View and manage orders
 - Update order status
+- Manage Out of stock Products
 - Manage brands/categories
 
 ---
