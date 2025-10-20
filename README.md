@@ -2,7 +2,7 @@
 **E-Commerce Website for Fashion and Apparel**  
 Built with the **MERN Stack (MongoDB, Express, React, Node.js)**
 
-## 🔥 Overview
+## 🔥 Overview 
 
 **WardrobeX** is a modern and user-friendly fashion e-commerce platform. It supports two types of users: **Customers** and **Admins**. Customers can browse products, manage wishlists and carts, and place orders. Admins can manage product listings, view customer orders, and maintain inventory.
 
